@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using VerticalSliceApp.Api.Common;
 using VerticalSliceApp.Api.Features.Shipments;
 using VerticalSliceApp.Api.Infrastructure.Persistence;
 
@@ -48,30 +47,5 @@ public class GetCustomerService
             .FirstOrDefaultAsync(cancellationToken);
 
         return customer;
-    }
-}
-
-// Endpoint
-public class GetCustomerEndpoint : IEndpoint
-{
-    public void MapEndpoint(IEndpointRouteBuilder app)
-    {
-        app.MapGet("/api/customers/{id:guid}", HandleAsync)
-            .WithName("GetCustomer")
-            .WithTags("Customers")
-            .Produces<GetCustomerResponse>()
-            .Produces(StatusCodes.Status404NotFound);
-    }
-
-    private static async Task<IResult> HandleAsync(
-        Guid id,
-        GetCustomerService service,
-        CancellationToken cancellationToken)
-    {
-        var customer = await service.ExecuteAsync(id, cancellationToken);
-
-        return customer is not null
-            ? Results.Ok(customer)
-            : Results.NotFound();
     }
 }

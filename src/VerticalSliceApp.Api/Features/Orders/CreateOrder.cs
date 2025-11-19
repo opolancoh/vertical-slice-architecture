@@ -1,5 +1,4 @@
 using FluentValidation;
-using VerticalSliceApp.Api.Common;
 using VerticalSliceApp.Api.Domain.Entities;
 using VerticalSliceApp.Api.Infrastructure.Persistence;
 
@@ -89,34 +88,5 @@ public class CreateOrderService
             order.Status.ToString(),
             order.TotalAmount,
             order.CreatedAt);
-    }
-}
-
-// Endpoint
-public class CreateOrderEndpoint : IEndpoint
-{
-    public void MapEndpoint(IEndpointRouteBuilder app)
-    {
-        app.MapPost("/api/orders", HandleAsync)
-            .WithName("CreateOrder")
-            .WithTags("Orders")
-            .Produces<OrderResponse>(StatusCodes.Status201Created)
-            .ProducesValidationProblem();
-    }
-
-    private static async Task<IResult> HandleAsync(
-        CreateOrderRequest request,
-        CreateOrderService service,
-        IValidator<CreateOrderRequest> validator,
-        CancellationToken cancellationToken)
-    {
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-        if (!validationResult.IsValid)
-        {
-            return Results.ValidationProblem(validationResult.ToDictionary());
-        }
-
-        var response = await service.ExecuteAsync(request, cancellationToken);
-        return Results.Created($"/api/orders/{response.Id}", response);
     }
 }

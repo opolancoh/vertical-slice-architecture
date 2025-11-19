@@ -1,5 +1,4 @@
 using FluentValidation;
-using VerticalSliceApp.Api.Common;
 using VerticalSliceApp.Api.Domain.Entities;
 using VerticalSliceApp.Api.Features.Shipments;
 using VerticalSliceApp.Api.Infrastructure.Persistence;
@@ -81,34 +80,5 @@ public class CreateCustomerService
             customer.Email,
             customer.Phone,
             customer.CreatedAt);
-    }
-}
-
-// Endpoint
-public class CreateCustomerEndpoint : IEndpoint
-{
-    public void MapEndpoint(IEndpointRouteBuilder app)
-    {
-        app.MapPost("/api/customers", HandleAsync)
-            .WithName("CreateCustomer")
-            .WithTags("Customers")
-            .Produces<CustomerResponse>(StatusCodes.Status201Created)
-            .ProducesValidationProblem();
-    }
-
-    private static async Task<IResult> HandleAsync(
-        CreateCustomerRequest request,
-        CreateCustomerService service,
-        IValidator<CreateCustomerRequest> validator,
-        CancellationToken cancellationToken)
-    {
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-        if (!validationResult.IsValid)
-        {
-            return Results.ValidationProblem(validationResult.ToDictionary());
-        }
-
-        var response = await service.ExecuteAsync(request, cancellationToken);
-        return Results.Created($"/api/customers/{response.Id}", response);
     }
 }

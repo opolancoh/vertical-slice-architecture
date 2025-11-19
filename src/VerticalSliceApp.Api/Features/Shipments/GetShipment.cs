@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using VerticalSliceApp.Api.Common;
 using VerticalSliceApp.Api.Infrastructure.Persistence;
 
 namespace VerticalSliceApp.Api.Features.Shipments;
@@ -65,30 +64,5 @@ public class GetShipmentService
             .FirstOrDefaultAsync(cancellationToken);
 
         return shipment;
-    }
-}
-
-// Endpoint
-public class GetShipmentEndpoint : IEndpoint
-{
-    public void MapEndpoint(IEndpointRouteBuilder app)
-    {
-        app.MapGet("/api/shipments/{id:guid}", HandleAsync)
-            .WithName("GetShipment")
-            .WithTags("Shipments")
-            .Produces<GetShipmentResponse>()
-            .Produces(StatusCodes.Status404NotFound);
-    }
-
-    private static async Task<IResult> HandleAsync(
-        Guid id,
-        GetShipmentService service,
-        CancellationToken cancellationToken)
-    {
-        var shipment = await service.ExecuteAsync(id, cancellationToken);
-
-        return shipment is not null
-            ? Results.Ok(shipment)
-            : Results.NotFound();
     }
 }

@@ -1,12 +1,12 @@
 using System.Reflection;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using VerticalSliceApp.Api.Common;
 using VerticalSliceApp.Api.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -38,15 +38,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Register all endpoints
-var endpointTypes = Assembly.GetExecutingAssembly()
-    .GetTypes()
-    .Where(t => typeof(IEndpoint).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract);
-
-foreach (var endpointType in endpointTypes)
-{
-    var endpoint = (IEndpoint)Activator.CreateInstance(endpointType)!;
-    endpoint.MapEndpoint(app);
-}
+app.MapControllers();
 
 app.Run();

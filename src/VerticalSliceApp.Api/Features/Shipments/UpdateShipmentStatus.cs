@@ -1,6 +1,5 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using VerticalSliceApp.Api.Common;
 using VerticalSliceApp.Api.Domain.Entities;
 using VerticalSliceApp.Api.Infrastructure.Persistence;
 
@@ -91,47 +90,6 @@ public class UpdateShipmentStatusService
         catch (InvalidOperationException ex)
         {
             throw new InvalidOperationException($"Cannot update shipment status: {ex.Message}", ex);
-        }
-    }
-}
-
-// Endpoint
-public class UpdateShipmentStatusEndpoint : IEndpoint
-{
-    public void MapEndpoint(IEndpointRouteBuilder app)
-    {
-        app.MapPatch("/api/shipments/{id:guid}/status", HandleAsync)
-            .WithName("UpdateShipmentStatus")
-            .WithTags("Shipments")
-            .Produces<ShipmentResponse>()
-            .Produces(StatusCodes.Status404NotFound)
-            .ProducesValidationProblem();
-    }
-
-    private static async Task<IResult> HandleAsync(
-        Guid id,
-        UpdateShipmentStatusRequest request,
-        UpdateShipmentStatusService service,
-        IValidator<UpdateShipmentStatusRequest> validator,
-        CancellationToken cancellationToken)
-    {
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-        if (!validationResult.IsValid)
-        {
-            return Results.ValidationProblem(validationResult.ToDictionary());
-        }
-
-        try
-        {
-            var response = await service.ExecuteAsync(id, request, cancellationToken);
-
-            return response is not null
-                ? Results.Ok(response)
-                : Results.NotFound();
-        }
-        catch (InvalidOperationException ex)
-        {
-            return Results.BadRequest(new { error = ex.Message });
         }
     }
 }

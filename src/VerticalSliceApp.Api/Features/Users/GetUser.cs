@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using VerticalSliceApp.Api.Common;
 using VerticalSliceApp.Api.Infrastructure.Persistence;
 
 namespace VerticalSliceApp.Api.Features.Users;
@@ -42,30 +41,5 @@ public class GetUserService
             .FirstOrDefaultAsync(cancellationToken);
 
         return user;
-    }
-}
-
-// Endpoint
-public class GetUserEndpoint : IEndpoint
-{
-    public void MapEndpoint(IEndpointRouteBuilder app)
-    {
-        app.MapGet("/api/users/{id:guid}", HandleAsync)
-            .WithName("GetUser")
-            .WithTags("Users")
-            .Produces<GetUserResponse>()
-            .Produces(StatusCodes.Status404NotFound);
-    }
-
-    private static async Task<IResult> HandleAsync(
-        Guid id,
-        GetUserService service,
-        CancellationToken cancellationToken)
-    {
-        var user = await service.ExecuteAsync(id, cancellationToken);
-
-        return user is not null
-            ? Results.Ok(user)
-            : Results.NotFound();
     }
 }

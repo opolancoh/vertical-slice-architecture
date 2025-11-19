@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using VerticalSliceApp.Api.Common;
 using VerticalSliceApp.Api.Infrastructure.Persistence;
 
 namespace VerticalSliceApp.Api.Features.Orders;
@@ -56,30 +55,5 @@ public class GetOrderService
             .FirstOrDefaultAsync(cancellationToken);
 
         return order;
-    }
-}
-
-// Endpoint
-public class GetOrderEndpoint : IEndpoint
-{
-    public void MapEndpoint(IEndpointRouteBuilder app)
-    {
-        app.MapGet("/api/orders/{id:guid}", HandleAsync)
-            .WithName("GetOrder")
-            .WithTags("Orders")
-            .Produces<GetOrderResponse>()
-            .Produces(StatusCodes.Status404NotFound);
-    }
-
-    private static async Task<IResult> HandleAsync(
-        Guid id,
-        GetOrderService service,
-        CancellationToken cancellationToken)
-    {
-        var order = await service.ExecuteAsync(id, cancellationToken);
-
-        return order is not null
-            ? Results.Ok(order)
-            : Results.NotFound();
     }
 }

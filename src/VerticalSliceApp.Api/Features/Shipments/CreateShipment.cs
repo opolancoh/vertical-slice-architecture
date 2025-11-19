@@ -1,6 +1,5 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using VerticalSliceApp.Api.Common;
 using VerticalSliceApp.Api.Domain.Entities;
 using VerticalSliceApp.Api.Infrastructure.Persistence;
 
@@ -118,41 +117,5 @@ public class CreateShipmentService
             shipment.ReceiverEmail,
             shipment.Status.ToString(),
             shipment.CreatedAt);
-    }
-}
-
-// Endpoint
-public class CreateShipmentEndpoint : IEndpoint
-{
-    public void MapEndpoint(IEndpointRouteBuilder app)
-    {
-        app.MapPost("/api/shipments", HandleAsync)
-            .WithName("CreateShipment")
-            .WithTags("Shipments")
-            .Produces<ShipmentResponse>(StatusCodes.Status201Created)
-            .ProducesValidationProblem();
-    }
-
-    private static async Task<IResult> HandleAsync(
-        CreateShipmentRequest request,
-        CreateShipmentService service,
-        IValidator<CreateShipmentRequest> validator,
-        CancellationToken cancellationToken)
-    {
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-        if (!validationResult.IsValid)
-        {
-            return Results.ValidationProblem(validationResult.ToDictionary());
-        }
-
-        try
-        {
-            var response = await service.ExecuteAsync(request, cancellationToken);
-            return Results.Created($"/api/shipments/{response.Id}", response);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return Results.Conflict(new { error = ex.Message });
-        }
     }
 }
