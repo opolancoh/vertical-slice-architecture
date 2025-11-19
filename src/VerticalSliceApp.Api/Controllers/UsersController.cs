@@ -1,5 +1,6 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using VerticalSliceApp.Api.Common.Extensions;
 using VerticalSliceApp.Api.Features.Users;
 
 namespace VerticalSliceApp.Api.Controllers;
